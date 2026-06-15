@@ -1,0 +1,1230 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Multi-Brand Gripper Sizing & Selection Suite</title>
+    <style>
+        :root {
+            --primary: #0f172a;
+            --accent: #2563eb;
+            --bg: #f8fafc;
+            --card-bg: #ffffff;
+            --text: #1e293b;
+            --border: #cbd5e1;
+            --success: #16a34a;
+            --warning: #ea580c;
+            --danger: #dc2626;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+        }
+
+        body {
+            background-color: var(--bg);
+            color: var(--text);
+            padding: 2rem 1rem;
+            line-height: 1.5;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 2rem;
+            border-bottom: 2px solid var(--border);
+            padding-bottom: 1.5rem;
+        }
+
+        h1 {
+            color: var(--primary);
+            font-size: 2.25rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .subtitle {
+            color: #64748b;
+            font-size: 1.1rem;
+        }
+
+        .tabs-navigation {
+            display: flex;
+            flex-direction: row;
+            justify-content: flex-start;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 2rem;
+            border-bottom: 2px solid var(--border);
+            padding-bottom: 0.75rem;
+            overflow-x: auto;
+            white-space: nowrap;
+        }
+
+        .tab-button {
+            padding: 0.75rem 1.5rem;
+            border: none;
+            background: #e2e8f0;
+            color: #475569;
+            cursor: pointer;
+            border-radius: 6px;
+            font-weight: 600;
+            transition: all 0.2s;
+            display: inline-block;
+        }
+
+        .tab-button.active {
+            background: var(--accent);
+            color: white;
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .grid-layout {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 2rem;
+        }
+
+        @media (min-width: 768px) {
+            .grid-layout {
+                grid-template-columns: 410px 1fr;
+            }
+        }
+
+        .panel {
+            background: var(--card-bg);
+            padding: 1.75rem;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.05);
+            border: 1px solid var(--border);
+            height: fit-content;
+            margin-bottom: 1.5rem;
+        }
+
+        h2 {
+            font-size: 1.25rem;
+            margin-bottom: 1.25rem;
+            color: var(--primary);
+            border-left: 4px solid var(--accent);
+            padding-left: 0.5rem;
+        }
+
+        .form-group {
+            margin-bottom: 1.25rem;
+        }
+
+        label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            font-size: 0.9rem;
+            color: #334155;
+        }
+
+        input[type="number"], input[type="text"], select {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            font-size: 1rem;
+            background: #fff;
+            outline: none;
+        }
+
+        input:focus, select:focus {
+            border-color: var(--accent);
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+        }
+
+        .jaw-toggle-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .jaw-card {
+            border: 2px solid var(--border);
+            border-radius: 8px;
+            padding: 1rem;
+            text-align: center;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.2s;
+        }
+
+        .jaw-card.active {
+            border-color: var(--accent);
+            background-color: rgba(37, 99, 235, 0.04);
+            color: var(--accent);
+        }
+
+        .action-buttons {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 1rem;
+            margin-top: 1.5rem;
+        }
+
+        button {
+            width: 100%;
+            padding: 0.85rem;
+            border: none;
+            border-radius: 6px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+
+        .btn-calc { background-color: var(--accent); color: white; }
+        .btn-calc:hover { background-color: #1d4ed8; }
+        .btn-pdf { background-color: #0f172a; color: white; }
+        .btn-pdf:hover { background-color: #1e293b; }
+        .btn-save { background-color: var(--success); color: white; }
+        .btn-save:hover { background-color: #15803d; }
+
+        .verification-log {
+            background: #0f172a;
+            color: #38bdf8;
+            font-family: monospace;
+            padding: 1rem;
+            border-radius: 8px;
+            margin-top: 1.5rem;
+            font-size: 0.85rem;
+            max-height: 220px;
+            overflow-y: auto;
+            display: none;
+        }
+
+        .log-entry { margin-bottom: 0.25rem; }
+
+        .results-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 1.5rem;
+        }
+
+        @media (min-width: 1200px) {
+            .results-grid { grid-template-columns: repeat(3, 1fr); }
+        }
+
+        .brand-card {
+            background: white;
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 1.5rem;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            box-shadow: 0 2px 4px rgb(0 0 0 / 0.02);
+        }
+
+        .brand-name {
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: #64748b;
+            font-weight: 700;
+        }
+
+        .model-name {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--primary);
+            margin: 0.4rem 0;
+        }
+
+        .tech-badge {
+            display: inline-block;
+            font-size: 0.75rem;
+            padding: 0.15rem 0.5rem;
+            border-radius: 50px;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            background: #f1f5f9;
+        }
+
+        .alt-badge {
+            display: block;
+            font-size: 0.8rem;
+            padding: 0.35rem 0.6rem;
+            border-radius: 6px;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            background: #eff6ff;
+            color: #1e40af;
+            border: 1px solid #bfdbfe;
+        }
+
+        .metric-row {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.9rem;
+            padding: 0.4rem 0;
+            border-bottom: 1px dashed #e2e8f0;
+        }
+
+        .metric-label { color: #64748b; }
+        .metric-value { font-weight: 600; }
+
+        .graph-container {
+            margin-top: 1.25rem;
+            background: #f8fafc;
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            padding: 0.5rem;
+            text-align: center;
+        }
+
+        .graph-title {
+            font-size: 0.75rem;
+            font-weight: 700;
+            color: #475569;
+            margin-bottom: 0.25rem;
+            text-transform: uppercase;
+        }
+
+        .no-selection {
+            text-align: center;
+            color: #64748b;
+            padding: 5rem 2rem;
+            background: white;
+            border-radius: 12px;
+            border: 2px dashed var(--border);
+        }
+
+        .spec-highlight-box {
+            background: #f1f5f9;
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin-top: 1rem;
+            border: 1px solid var(--border);
+        }
+
+        .guide-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 1.5rem;
+        }
+        @media (min-width: 992px) {
+            .guide-grid { grid-template-columns: 1fr 1fr; }
+        }
+        
+        .image-container {
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            background: #ffffff;
+            padding: 1rem;
+            text-align: center;
+            min-height: 450px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05);
+        }
+
+        @media print {
+            body { background: white !important; color: black !important; padding: 0 !important; }
+            .container { max-width: 100% !important; width: 100% !important; margin: 0 !important; padding: 0 !important; }
+            .tabs-navigation, .panel:first-child, .btn-calc, .btn-pdf, .btn-save, .verification-log { display: none !important; }
+            .grid-layout { display: block !important; }
+            .tab-content { display: block !important; }
+            .results-grid { display: grid !important; grid-template-columns: repeat(3, 1fr) !important; gap: 15px !important; width: 100% !important; }
+            .brand-card { border: 1px solid #94a3b8 !important; background: white !important; page-break-inside: avoid !important; box-shadow: none !important; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="container" id="printableArea">
+    <header>
+        <h1>Gripper Selection Matrix</h1>
+        <p class="subtitle">Multi-Brand Engineering Evaluation Suite with Adaptive Stroke Filtering Controls</p>
+    </header>
+
+    <div class="tabs-navigation">
+        <button class="tab-button active" onclick="switchTab('sizing-tab', this)">Sizing & Evaluation Engine</button>
+        <button class="tab-button" onclick="switchTab('lookup-tab', this); triggerLookupSync();">Quick Technical Lookup</button>
+        <button class="tab-button" onclick="switchTab('editor-tab', this); triggerEditorSync();">Dynamic Data Editor</button>
+        <button class="tab-button" onclick="switchTab('smc-guide-tab', this)">SMC Read Switch Mounting</button>
+    </div>
+
+    <div id="sizing-tab" class="tab-content active">
+        <div class="grid-layout">
+            <div class="panel">
+                <h2>System Constraints</h2>
+                
+                <label>Jaw Mechanical Layout</label>
+                <div class="jaw-toggle-container">
+                    <div class="jaw-card active" id="jaw2" onclick="setJaws(2)">2-Jaw Parallel</div>
+                    <div class="jaw-card" id="jaw3" onclick="setJaws(3)">3-Jaw Centric</div>
+                </div>
+
+                <div class="form-group">
+                    <label for="techType">Gripper Operation Mode</label>
+                    <select id="techType" onchange="repopulateStrokeFilterOptions()">
+                        <option value="generic">Generic (Double Acting Standard)</option>
+                        <option value="nc">Normally Closed (Single Acting Spring)</option>
+                        <option value="no">Normally Open (Single Acting Spring)</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="strokeFilter" style="color: var(--accent);">Desired Stroke Size Per Jaw (mm)</label>
+                    <select id="strokeFilter">
+                        <option value="any">any (Display All Matches)</option>
+                        </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="ipRating">IP Protection Class (Optional)</label>
+                    <select id="ipRating" onchange="repopulateStrokeFilterOptions()">
+                        <option value="any">Any / No Constraint</option>
+                        <option value="40">IP 40 Standard</option>
+                        <option value="64">IP 64 Environment Protected</option>
+                    </select>
+                </div>
+
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+                    <div class="form-group">
+                        <label for="weight">Component Mass (kg)</label>
+                        <input type="number" id="weight" value="3.5" step="0.1" min="0.01">
+                    </div>
+                    <div class="form-group">
+                        <label for="safetyFactor" style="color: var(--accent);">Safety / Breakout Factor</label>
+                        <input type="number" id="safetyFactor" value="1.25" step="0.05" min="1.00">
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="pressure">Pneumatic Supply Pressure (bar)</label>
+                    <input type="number" id="pressure" value="6.0" step="0.5" min="2" max="8">
+                </div>
+
+                <div class="form-group">
+                    <label for="length">Effective Finger Projection Length (mm)</label>
+                    <input type="number" id="length" value="65" step="5" min="0">
+                </div>
+
+                <div class="action-buttons">
+                    <button class="btn-calc" onclick="evaluateGrippers()">Execute Verification Engine</button>
+                    <button class="btn-pdf" onclick="exportToPDF()">Export Interface to PDF</button>
+                </div>
+
+                <div class="verification-log" id="logBox"></div>
+            </div>
+
+            <div>
+                <div class="panel" style="width:100%; min-height: 520px;">
+                    <h2>Verified Technical Recommendations</h2>
+                    <div id="resultsWrapper">
+                        <div class="no-selection">
+                            Define engineering parameters and launch the verification engine to isolate matching components.
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="lookup-tab" class="tab-content">
+        <div class="panel" style="max-width: 600px; margin: 0 auto;">
+            <h2>Connector & Purge Dimension Lookup</h2>
+            <div class="form-group">
+                <label for="lookupJaw">Jaw Mechanical Layout</label>
+                <select id="lookupJaw" onchange="updateLookupBrands()">
+                    <option value="2">2-Jaw Parallel</option>
+                    <option value="3">3-Jaw Centric</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="lookupBrand">Select Manufacturer</label>
+                <select id="lookupBrand" onchange="updateLookupModels()">
+                    </select>
+            </div>
+            <div class="form-group">
+                <label for="lookupModel">Select Component Model</label>
+                <select id="lookupModel" onchange="displayLookupData()">
+                    </select>
+            </div>
+
+            <div class="spec-highlight-box" id="lookupDisplay">
+                <p style="color:#64748b; text-align:center;">Select parameters to extract interface details.</p>
+            </div>
+        </div>
+    </div>
+
+    <div id="editor-tab" class="tab-content">
+        <div class="panel" style="max-width: 700px; margin: 0 auto;">
+            <h2>Dynamic Hardware Registry & Specification Editor</h2>
+            <div style="display:grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+                <div class="form-group">
+                    <label for="editJaw">Target Jaw Group</label>
+                    <select id="editJaw" onchange="updateEditorModels()">
+                        <option value="2">2-Jaw Parallel Group</option>
+                        <option value="3">3-Jaw Centric Group</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="editBrand">Target Manufacturer</label>
+                    <select id="editBrand" onchange="updateEditorModels()">
+                        </select>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="editModelSelector">Select Target Variant to Edit (Or Create New)</label>
+                <select id="editModelSelector" onchange="populateEditorFormFields()">
+                    </select>
+            </div>
+
+            <hr style="border:0; border-top:1px solid var(--border); margin:1.5rem 0;">
+
+            <div class="form-group">
+                <label for="fieldModelName">Model Part Number / Designation String</label>
+                <input type="text" id="fieldModelName" placeholder="e.g., GPP5008N-00-A">
+            </div>
+
+            <div style="display:grid; grid-template-columns: 1fr 1fr 1fr; gap:1rem;">
+                <div class="form-group">
+                    <label for="fieldFitting">Pneumatic Port Size</label>
+                    <input type="text" id="fieldFitting" placeholder="e.g., M5">
+                </div>
+                <div class="form-group">
+                    <label for="fieldPurge">Purge Port Size</label>
+                    <input type="text" id="fieldPurge" placeholder="e.g., M5 or N/A">
+                </div>
+                <div class="form-group">
+                    <label for="fieldStroke">Stroke Per Jaw (mm)</label>
+                    <input type="number" id="fieldStroke" value="4" step="0.5">
+                </div>
+            </div>
+
+            <div style="display:grid; grid-template-columns: 1fr 1fr 1fr; gap:1rem;">
+                <div class="form-group">
+                    <label for="fieldBaseForce">Base Force (N)</label>
+                    <input type="number" id="fieldBaseForce" value="100">
+                </div>
+                <div class="form-group">
+                    <label for="fieldMaxLen">Max Finger Length (mm)</label>
+                    <input type="number" id="fieldMaxLen" value="80">
+                </div>
+                <div class="form-group">
+                    <label for="fieldDerating">Derating Slope Coeff.</label>
+                    <input type="number" id="fieldDerating" value="0.005" step="0.0001">
+                </div>
+            </div>
+
+            <div style="display:grid; grid-template-columns: 1fr 1fr; gap:1rem;">
+                <div class="form-group">
+                    <label for="fieldTech">Operation Mechanism Technology</label>
+                    <select id="fieldTech">
+                        <option value="generic">generic (Double Acting)</option>
+                        <option value="nc">nc (Normally Closed)</option>
+                        <option value="no">no (Normally Open)</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="fieldIp">IP Protective Class</label>
+                    <select id="fieldIp">
+                        <option value="40">40 (Standard)</option>
+                        <option value="64">64 (Sealed Enclosure)</option>
+                    </select>
+                </div>
+            </div>
+
+            <button class="btn-save" onclick="commitRegistryModification()">Commit Specs & Refresh Runtime Array</button>
+        </div>
+    </div>
+
+    <div id="smc-guide-tab" class="tab-content">
+        <div class="panel">
+            <h2>SMC MHS Series Auto Switch Mounting Specifications</h2>
+            <div class="guide-grid">
+                <div>
+                    <div style="background: #f1f5f9; padding: 1.25rem; border-radius: 8px; border: 1px solid var(--border); margin-bottom: 1.5rem;">
+                        <h3 style="font-size: 1.05rem; margin-bottom: 0.75rem; color: var(--primary);">Bracket Requirement Verification Tool</h3>
+                        <div class="form-group">
+                            <label for="guideModelSelect">Select SMC Model Series & Bore Size</label>
+                            <select id="guideModelSelect" onchange="checkBracketRequirement()">
+                                <option value="direct">MHS2 / MHS3 / MHS4 (Bore Sizes: 16, 20, 25)</option>
+                                <option value="direct">MHSJ3 / MHSH3 (Bore Sizes: 16, 20, 25, 32, 40, 50, 63, 80)</option>
+                                <option value="direct">MHSL3 (Bore Sizes: 16, 20, 25)</option>
+                                <option value="bracket">MHS2 / MHS4 (Bore Sizes: 32, 40, 50, 63)</option>
+                                <option value="bracket">MHS3 / MHSL3 (Bore Sizes: 32, 40, 50, 63, 80, 100, 125)</option>
+                            </select>
+                        </div>
+                        <div id="bracketResultBox" style="padding: 1rem; border-radius: 6px; font-weight: 600; text-align: center; margin-top: 1rem;"></div>
+                    </div>
+
+                    <div style="margin-top: 1rem;">
+                        <h3 style="font-size: 1.1rem; margin-bottom: 0.5rem; color: var(--primary);">Tooling & Torque Control Matrix</h3>
+                        <ul style="padding-left: 1.25rem; font-size: 0.9rem; color: #475569;">
+                            <li style="margin-bottom: 0.5rem;"><strong>Driver Geometry:</strong> Standard flathead watchmaker screwdriver with a grip diameter of <strong>5 to 6 mm</strong>.</li>
+                            <li style="margin-bottom: 0.5rem;"><strong>Direct Fastening Tightening Torque:</strong> Apply <strong>0.05 to 0.15 N·m</strong> to the housing screw (or <strong>0.05 to 0.10 N·m</strong> for solid-state D-M9A(V) components).</li>
+                            <li style="margin-bottom: 0.5rem;"><strong>Bracket System Fastening Torque:</strong> Apply <strong>0.05 to 1.00 N·m</strong> directly to the bracket assembly screw (M2.5). Tighten by rotating approximately <strong>90° beyond the structural point of resistance</strong>.</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div>
+                    <h3 style="font-size: 1rem; margin-bottom: 0.5rem; color: var(--primary);">SMC Mounting Guide Data Sheet</h3>
+                    <div class="image-container">
+                        <img src="image_162beb.jpg" alt="SMC MHS Auto Switch Mounting Specifications Guide" onerror="this.style.display='none'; document.getElementById('imgFallback').style.display='block';">
+                        <div id="imgFallback" style="display:none;">
+                            <p>Reference file <code>image_162beb.jpg</code> from workspace directory.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    let selectedJaws = 2;
+
+    // DATA NORMALIZED ACCORDING TO TRUE PER-JAW STROKE CONVENTIONS
+    // tech: "generic" = Standard Double Acting | "nc" = Normally Closed | "no" = Normally Open
+    const gripperSpecs = {
+        2: {
+            "SMC (MHZ2 Series)": [
+                // Standard IP40
+                { model: "MHZ2-6D",  baseForce: 6.1, stroke: 2,    maxLen: 25,  derating: 0.0300, fitting: "M3", purge: "N/A", ip: 40, tech: "generic" },
+                { model: "MHZ2-10D", baseForce: 11,  stroke: 2,    maxLen: 30,  derating: 0.0150, fitting: "M3", purge: "N/A", ip: 40, tech: "generic" },
+                { model: "MHZ2-16D", baseForce: 34,  stroke: 3,    maxLen: 35,  derating: 0.0110, fitting: "M5", purge: "N/A", ip: 40, tech: "generic" },
+                { model: "MHZ2-20D", baseForce: 42,  stroke: 5,  maxLen: 60,  derating: 0.0080, fitting: "M5", purge: "N/A", ip: 40, tech: "generic" },
+                { model: "MHZ2-25D", baseForce: 65,  stroke: 7,   maxLen: 80,  derating: 0.0060, fitting: "M5", purge: "N/A", ip: 40, tech: "generic" },
+                { model: "MHZ2-32D", baseForce: 158, stroke: 11,   maxLen: 125, derating: 0.0040, fitting: "M5", purge: "N/A", ip: 40, tech: "generic" },
+                { model: "MHZ2-40D", baseForce: 254, stroke: 15,   maxLen: 150, derating: 0.0030, fitting: "M5", purge: "N/A", ip: 40, tech: "generic" },
+                // Normally Closed IP40
+                { model: "MHZ2-6C",  baseForce: 3.7, stroke: 2,    maxLen: 25,  derating: 0.0300, fitting: "M3", purge: "N/A", ip: 40, tech: "nc" },
+                { model: "MHZ2-10C", baseForce: 15,  stroke: 2,    maxLen: 30,  derating: 0.0150, fitting: "M3", purge: "N/A", ip: 40, tech: "nc" },
+                { model: "MHZ2-16C", baseForce: 45,  stroke: 3,    maxLen: 35,  derating: 0.0110, fitting: "M5", purge: "N/A", ip: 40, tech: "nc" },
+                { model: "MHZ2-20C", baseForce: 56,  stroke: 5,  maxLen: 55,  derating: 0.0080, fitting: "M5", purge: "N/A", ip: 40, tech: "nc" },
+                { model: "MHZ2-25C", baseForce: 83,  stroke: 7,   maxLen: 75,  derating: 0.0060, fitting: "M5", purge: "N/A", ip: 40, tech: "nc" },
+                { model: "MHZ2-32C", baseForce: 193, stroke: 11,   maxLen: 90, derating: 0.0040, fitting: "M5", purge: "N/A", ip: 40, tech: "nc" },
+                { model: "MHZ2-40C", baseForce: 310, stroke: 15,   maxLen: 100, derating: 0.0030, fitting: "M5", purge: "N/A", ip: 40, tech: "nc" },
+                // Normally Open IP40
+                { model: "MHZ2-6S",  baseForce: 1.7, stroke: 2,    maxLen: 25,  derating: 0.0300, fitting: "M3", purge: "N/A", ip: 40, tech: "no" },
+                { model: "MHZ2-10S", baseForce: 14,  stroke: 2,    maxLen: 30,  derating: 0.0150, fitting: "M3", purge: "N/A", ip: 40, tech: "no" },
+                { model: "MHZ2-16S", baseForce: 43,  stroke: 3,    maxLen: 35,  derating: 0.0110, fitting: "M5", purge: "N/A", ip: 40, tech: "no" },
+                { model: "MHZ2-20S", baseForce: 54,  stroke: 5,  maxLen: 55,  derating: 0.0080, fitting: "M5", purge: "N/A", ip: 40, tech: "no" },
+                { model: "MHZ2-25S", baseForce: 81,  stroke: 7,   maxLen: 75,  derating: 0.0060, fitting: "M5", purge: "N/A", ip: 40, tech: "no" },
+                { model: "MHZ2-32S", baseForce: 190, stroke: 11,   maxLen: 125, derating: 0.0040, fitting: "M5", purge: "N/A", ip: 40, tech: "no" },
+                { model: "MHZ2-40S", baseForce: 305, stroke: 15,   maxLen: 150, derating: 0.0030, fitting: "M5", purge: "N/A", ip: 40, tech: "no" },
+                // Standard IP64 (Boot variants)
+                // { model: "MHZ2-10D+Boot", baseForce: 11,  stroke: 2,   maxLen: 30,  derating: 0.0150, fitting: "M3", purge: "N/A", ip: 64, tech: "generic" },
+                // { model: "MHZ2-16D+Boot", baseForce: 34,  stroke: 5,   maxLen: 40,  derating: 0.0110, fitting: "M5", purge: "N/A", ip: 64, tech: "generic" },
+                // { model: "MHZ2-20D+Boot", baseForce: 42,  stroke: 7.5, maxLen: 60,  derating: 0.0080, fitting: "M5", purge: "N/A", ip: 64, tech: "generic" },
+                // { model: "MHZ2-25D+Boot", baseForce: 65,  stroke: 10,  maxLen: 80,  derating: 0.0060, fitting: "M5", purge: "N/A", ip: 64, tech: "generic" },
+                // { model: "MHZ2-32D+Boot", baseForce: 158, stroke: 11,  maxLen: 100, derating: 0.0040, fitting: "M5", purge: "N/A", ip: 64, tech: "generic" },
+                // { model: "MHZ2-40D+Boot", baseForce: 254, stroke: 15,  maxLen: 120, derating: 0.0030, fitting: "M5", purge: "N/A", ip: 64, tech: "generic" },
+                // Normally Closed IP64
+                // { model: "MHZ2-10C+Boot", baseForce: 15,  stroke: 2,   maxLen: 30,  derating: 0.0150, fitting: "M3", purge: "N/A", ip: 64, tech: "nc" }
+            ],
+            "Schunk (PGN-plus-P)": [
+                // Standard IP40 (-1 variants, sizes 40-240)
+                { model: "PGN-plus-P 40-1",   baseForce: 180,  stroke: 2.5, maxLen: 65,  derating: 0.0045, fitting: "M3",      purge: "M3", ip: 40, tech: "generic" },
+                { model: "PGN-plus-P 50-1",   baseForce: 220,  stroke: 4,   maxLen: 80,  derating: 0.0035, fitting: "M5",      purge: "M3", ip: 40, tech: "generic" },
+                { model: "PGN-plus-P 64-1",   baseForce: 350,  stroke: 6,   maxLen: 100, derating: 0.0028, fitting: "M5",      purge: "M5", ip: 40, tech: "generic" },
+                { model: "PGN-plus-P 80-1",   baseForce: 550,  stroke: 8,   maxLen: 125, derating: 0.0022, fitting: "M5",      purge: "M5", ip: 40, tech: "generic" },
+                { model: "PGN-plus-P 100-1",  baseForce: 870,  stroke: 10,  maxLen: 160, derating: 0.0018, fitting: "G 1/8\"", purge: "M5", ip: 40, tech: "generic" },
+                { model: "PGN-plus-P 125-1",  baseForce: 1400, stroke: 13,  maxLen: 200, derating: 0.0012, fitting: "G 1/8\"", purge: "M5", ip: 40, tech: "generic" },
+                { model: "PGN-plus-P 160-1",  baseForce: 2500, stroke: 16,  maxLen: 245, derating: 0.0009, fitting: "G 1/8\"", purge: "M5", ip: 40, tech: "generic" },
+                { model: "PGN-plus-P 200-1",  baseForce: 3800, stroke: 25,  maxLen: 310, derating: 0.0006, fitting: "G 1/8\"", purge: "M5", ip: 40, tech: "generic", altZimmer: "GP420N-C" },
+                { model: "PGN-plus-P 240-1",  baseForce: 5300, stroke: 30,  maxLen: 355, derating: 0.0004, fitting: "G 1/8\"", purge: "M5", ip: 40, tech: "generic", altZimmer: "GP430N-C" },
+                // Normally Closed IP40 (-AS)
+                { model: "PGN-plus-P 40-1-AS",   baseForce: 235,  stroke: 2.5, maxLen: 60,  derating: 0.0045, fitting: "M3",      purge: "M3", ip: 40, tech: "nc" },
+                { model: "PGN-plus-P 50-1-AS",   baseForce: 295,  stroke: 4,   maxLen: 75,  derating: 0.0035, fitting: "M5",      purge: "M3", ip: 40, tech: "nc" },
+                { model: "PGN-plus-P 64-1-AS",   baseForce: 470,  stroke: 6,   maxLen: 90,  derating: 0.0028, fitting: "M5",      purge: "M5", ip: 40, tech: "nc" },
+                { model: "PGN-plus-P 80-1-AS",   baseForce: 760,  stroke: 8,   maxLen: 115, derating: 0.0022, fitting: "M5",      purge: "M5", ip: 40, tech: "nc" },
+                { model: "PGN-plus-P 100-1-AS",  baseForce: 1180, stroke: 10,  maxLen: 145, derating: 0.0018, fitting: "G 1/8\"", purge: "M5", ip: 40, tech: "nc" },
+                { model: "PGN-plus-P 125-1-AS",  baseForce: 2000, stroke: 13,  maxLen: 185, derating: 0.0012, fitting: "G 1/8\"", purge: "M5", ip: 40, tech: "nc" },
+                { model: "PGN-plus-P 160-1-AS",  baseForce: 3300, stroke: 16,  maxLen: 225, derating: 0.0009, fitting: "G 1/8\"", purge: "M5", ip: 40, tech: "nc" },
+                { model: "PGN-plus-P 200-1-AS",  baseForce: 5050, stroke: 25,  maxLen: 265, derating: 0.0006, fitting: "G 1/8\"", purge: "M5", ip: 40, tech: "nc" },
+                { model: "PGN-plus-P 240-1-AS",  baseForce: 7800, stroke: 30,  maxLen: 305, derating: 0.0004, fitting: "G 1/8\"", purge: "M5", ip: 40, tech: "nc" },
+                // Normally Open IP40 (-IS)
+                { model: "PGN-plus-P 40-1-IS",   baseForce: 200,  stroke: 2.5, maxLen: 60,  derating: 0.0045, fitting: "M3",      purge: "M3", ip: 40, tech: "no" },
+                { model: "PGN-plus-P 50-1-IS",   baseForce: 220,  stroke: 4,   maxLen: 75,  derating: 0.0035, fitting: "M5",      purge: "M3", ip: 40, tech: "no" },
+                { model: "PGN-plus-P 64-1-IS",   baseForce: 350,  stroke: 6,   maxLen: 90,  derating: 0.0028, fitting: "M5",      purge: "M5", ip: 40, tech: "no" },
+                { model: "PGN-plus-P 80-1-IS",   baseForce: 550,  stroke: 8,   maxLen: 115, derating: 0.0022, fitting: "M5",      purge: "M5", ip: 40, tech: "no" },
+                { model: "PGN-plus-P 100-1-IS",  baseForce: 870,  stroke: 10,  maxLen: 145, derating: 0.0018, fitting: "G 1/8\"", purge: "M5", ip: 40, tech: "no" },
+                { model: "PGN-plus-P 125-1-IS",  baseForce: 1400, stroke: 13,  maxLen: 185, derating: 0.0012, fitting: "G 1/8\"", purge: "M5", ip: 40, tech: "no" },
+                { model: "PGN-plus-P 160-1-IS",  baseForce: 2500, stroke: 16,  maxLen: 225, derating: 0.0009, fitting: "G 1/8\"", purge: "M5", ip: 40, tech: "no" },
+                { model: "PGN-plus-P 200-1-IS",  baseForce: 3800, stroke: 25,  maxLen: 265, derating: 0.0006, fitting: "G 1/8\"", purge: "M5", ip: 40, tech: "no" },
+                { model: "PGN-plus-P 240-1-IS",  baseForce: 5300, stroke: 30,  maxLen: 305, derating: 0.0004, fitting: "G 1/8\"", purge: "M5", ip: 40, tech: "no" },
+                // Standard IP64 (-SD)
+                { model: "PGN-plus-P 40-1-SD",   baseForce: 180,  stroke: 2.5, maxLen: 65,  derating: 0.0045, fitting: "M3",      purge: "M3", ip: 64, tech: "generic" },
+                { model: "PGN-plus-P 50-1-SD",   baseForce: 220,  stroke: 4,   maxLen: 80,  derating: 0.0035, fitting: "M5",      purge: "M3", ip: 64, tech: "generic" },
+                { model: "PGN-plus-P 64-1-SD",   baseForce: 350,  stroke: 6,   maxLen: 100, derating: 0.0028, fitting: "M5",      purge: "M5", ip: 64, tech: "generic" },
+                { model: "PGN-plus-P 80-1-SD",   baseForce: 550,  stroke: 8,   maxLen: 125, derating: 0.0022, fitting: "M5",      purge: "M5", ip: 64, tech: "generic" },
+                { model: "PGN-plus-P 100-1-SD",  baseForce: 870,  stroke: 10,  maxLen: 160, derating: 0.0018, fitting: "G 1/8\"", purge: "M5", ip: 64, tech: "generic" },
+                { model: "PGN-plus-P 125-1-SD",  baseForce: 1400, stroke: 13,  maxLen: 200, derating: 0.0012, fitting: "G 1/8\"", purge: "M5", ip: 64, tech: "generic" },
+                { model: "PGN-plus-P 160-1-SD",  baseForce: 2500, stroke: 16,  maxLen: 245, derating: 0.0009, fitting: "G 1/8\"", purge: "M5", ip: 64, tech: "generic" },
+                { model: "PGN-plus-P 200-1-SD",  baseForce: 3800, stroke: 25,  maxLen: 310, derating: 0.0006, fitting: "G 1/8\"", purge: "M5", ip: 64, tech: "generic" },
+                { model: "PGN-plus-P 240-1-SD",  baseForce: 5300, stroke: 30,  maxLen: 355, derating: 0.0004, fitting: "G 1/8\"", purge: "M5", ip: 64, tech: "generic" },
+                // Normally Closed IP64 (-AS-SD)
+                { model: "PGN-plus-P 40-1-AS-SD",   baseForce: 235,  stroke: 2.5, maxLen: 60,  derating: 0.0045, fitting: "M3",      purge: "M3", ip: 64, tech: "nc" },
+                { model: "PGN-plus-P 50-1-AS-SD",   baseForce: 295,  stroke: 4,   maxLen: 75,  derating: 0.0035, fitting: "M5",      purge: "M3", ip: 64, tech: "nc" },
+                { model: "PGN-plus-P 64-1-AS-SD",   baseForce: 470,  stroke: 6,   maxLen: 90,  derating: 0.0028, fitting: "M5",      purge: "M5", ip: 64, tech: "nc" },
+                { model: "PGN-plus-P 80-1-AS-SD",   baseForce: 760,  stroke: 8,   maxLen: 115, derating: 0.0022, fitting: "M5",      purge: "M5", ip: 64, tech: "nc" },
+                { model: "PGN-plus-P 100-1-AS-SD",  baseForce: 1180, stroke: 10,  maxLen: 145, derating: 0.0018, fitting: "G 1/8\"", purge: "M5", ip: 64, tech: "nc" },
+                { model: "PGN-plus-P 125-1-AS-SD",  baseForce: 2000, stroke: 13,  maxLen: 185, derating: 0.0012, fitting: "G 1/8\"", purge: "M5", ip: 64, tech: "nc" },
+                { model: "PGN-plus-P 160-1-AS-SD",  baseForce: 3300, stroke: 16,  maxLen: 225, derating: 0.0009, fitting: "G 1/8\"", purge: "M5", ip: 64, tech: "nc" },
+                // Normally Open IP64 (-IS-SD)
+                { model: "PGN-plus-P 40-1-IS-SD",   baseForce: 200,  stroke: 2.5, maxLen: 60,  derating: 0.0045, fitting: "M3",      purge: "M3", ip: 64, tech: "no" },
+                { model: "PGN-plus-P 50-1-IS-SD",   baseForce: 220,  stroke: 4,   maxLen: 75,  derating: 0.0035, fitting: "M5",      purge: "M3", ip: 64, tech: "no" },
+                { model: "PGN-plus-P 64-1-IS-SD",   baseForce: 350,  stroke: 6,   maxLen: 90,  derating: 0.0028, fitting: "M5",      purge: "M5", ip: 64, tech: "no" },
+                { model: "PGN-plus-P 80-1-IS-SD",   baseForce: 550,  stroke: 8,   maxLen: 115, derating: 0.0022, fitting: "M5",      purge: "M5", ip: 64, tech: "no" },
+                { model: "PGN-plus-P 100-1-IS-SD",  baseForce: 870,  stroke: 10,  maxLen: 145, derating: 0.0018, fitting: "G 1/8\"", purge: "M5", ip: 64, tech: "no" },
+                { model: "PGN-plus-P 125-1-IS-SD",  baseForce: 1400, stroke: 13,  maxLen: 185, derating: 0.0012, fitting: "G 1/8\"", purge: "M5", ip: 64, tech: "no" },
+                { model: "PGN-plus-P 160-1-IS-SD",  baseForce: 2500, stroke: 16,  maxLen: 225, derating: 0.0009, fitting: "G 1/8\"", purge: "M5", ip: 64, tech: "no" }
+            ],
+            "Zimmer Economical (GP400 Series)": [
+                // Standard IP40 - highest stroke (N variants)
+                { model: "GP403N-C",  baseForce: 85,   stroke: 3,  maxLen: 55,  derating: 0.0050, fitting: "M5",      purge: "M5",      ip: 40, tech: "generic" },
+                { model: "GP404N-C",  baseForce: 170,  stroke: 4,  maxLen: 65,  derating: 0.0038, fitting: "M5",      purge: "M5",      ip: 40, tech: "generic" },
+                { model: "GP406N-C",  baseForce: 300,  stroke: 6,  maxLen: 85,  derating: 0.0030, fitting: "M5",      purge: "M5",      ip: 40, tech: "generic" },
+                { model: "GP408N-C",  baseForce: 550,  stroke: 8,  maxLen: 100, derating: 0.0025, fitting: "M5",      purge: "M5",      ip: 40, tech: "generic" },
+                { model: "GP410N-C",  baseForce: 740,  stroke: 10, maxLen: 115, derating: 0.0020, fitting: "M5",      purge: "M5",      ip: 40, tech: "generic" },
+                { model: "GP412N-C",  baseForce: 1290, stroke: 12, maxLen: 130, derating: 0.0016, fitting: "G 1/8\"", purge: "M5",      ip: 40, tech: "generic" },
+                { model: "GP416N-C",  baseForce: 1860, stroke: 16, maxLen: 150, derating: 0.0013, fitting: "G 1/8\"", purge: "M5",      ip: 40, tech: "generic" },
+                { model: "GP420N-C",  baseForce: 3175, stroke: 20, maxLen: 180, derating: 0.0010, fitting: "G 1/4\"", purge: "M5",      ip: 40, tech: "generic" },
+                { model: "GP430N-C",  baseForce: 6675, stroke: 30, maxLen: 240, derating: 0.0007, fitting: "G 1/4\"", purge: "G 1/8\"", ip: 40, tech: "generic" },
+                // Normally Closed IP40 (NC)
+                { model: "GP403NC-C", baseForce: 115,  stroke: 3,  maxLen: 55,  derating: 0.0050, fitting: "M5",      purge: "M5",      ip: 40, tech: "nc" },
+                { model: "GP404NC-C", baseForce: 210,  stroke: 4,  maxLen: 65,  derating: 0.0038, fitting: "M5",      purge: "M5",      ip: 40, tech: "nc" },
+                { model: "GP406NC-C", baseForce: 400,  stroke: 6,  maxLen: 85,  derating: 0.0030, fitting: "M5",      purge: "M5",      ip: 40, tech: "nc" },
+                { model: "GP408NC-C", baseForce: 700,  stroke: 8,  maxLen: 100, derating: 0.0025, fitting: "M5",      purge: "M5",      ip: 40, tech: "nc" },
+                { model: "GP410NC-C", baseForce: 990,  stroke: 10, maxLen: 115, derating: 0.0020, fitting: "M5",      purge: "M5",      ip: 40, tech: "nc" },
+                { model: "GP412NC-C", baseForce: 1780, stroke: 12, maxLen: 130, derating: 0.0016, fitting: "G 1/8\"", purge: "M5",      ip: 40, tech: "nc" },
+                { model: "GP416NC-C", baseForce: 2490, stroke: 16, maxLen: 150, derating: 0.0013, fitting: "G 1/8\"", purge: "M5",      ip: 40, tech: "nc" },
+                { model: "GP420NC-C", baseForce: 4060, stroke: 20, maxLen: 180, derating: 0.0010, fitting: "G 1/4\"", purge: "M5",      ip: 40, tech: "nc" },
+                { model: "GP430NC-C", baseForce: 8480, stroke: 30, maxLen: 240, derating: 0.0007, fitting: "G 1/4\"", purge: "G 1/8\"", ip: 40, tech: "nc" },
+                // Normally Open IP40 (NO)
+                { model: "GP403NO-C", baseForce: 115,  stroke: 3,  maxLen: 55,  derating: 0.0050, fitting: "M5",      purge: "M5",      ip: 40, tech: "no" },
+                { model: "GP404NO-C", baseForce: 225,  stroke: 4,  maxLen: 65,  derating: 0.0038, fitting: "M5",      purge: "M5",      ip: 40, tech: "no" },
+                { model: "GP406NO-C", baseForce: 425,  stroke: 6,  maxLen: 85,  derating: 0.0030, fitting: "M5",      purge: "M5",      ip: 40, tech: "no" },
+                { model: "GP408NO-C", baseForce: 740,  stroke: 8,  maxLen: 100, derating: 0.0025, fitting: "M5",      purge: "M5",      ip: 40, tech: "no" },
+                { model: "GP410NO-C", baseForce: 1050, stroke: 10, maxLen: 115, derating: 0.0020, fitting: "M5",      purge: "M5",      ip: 40, tech: "no" },
+                { model: "GP412NO-C", baseForce: 1850, stroke: 12, maxLen: 130, derating: 0.0016, fitting: "G 1/8\"", purge: "M5",      ip: 40, tech: "no" },
+                { model: "GP416NO-C", baseForce: 2590, stroke: 16, maxLen: 150, derating: 0.0013, fitting: "G 1/8\"", purge: "M5",      ip: 40, tech: "no" },
+                { model: "GP420NO-C", baseForce: 4215, stroke: 20, maxLen: 180, derating: 0.0010, fitting: "G 1/4\"", purge: "M5",      ip: 40, tech: "no" },
+                { model: "GP430NO-C", baseForce: 8640, stroke: 30, maxLen: 240, derating: 0.0007, fitting: "G 1/4\"", purge: "G 1/8\"", ip: 40, tech: "no" }
+            ]
+        },
+        3: {
+            "SMC (MHS3 Series)": [
+                // Standard IP40
+                { model: "MHS3-16D",  baseForce: 14,   stroke: 2,  maxLen: 20,  derating: 0.0120, fitting: "M3", purge: "N/A", ip: 40, tech: "generic" },
+                { model: "MHS3-20D",  baseForce: 25,   stroke: 2,  maxLen: 25,  derating: 0.0090, fitting: "M5", purge: "N/A", ip: 40, tech: "generic" },
+                { model: "MHS3-25D",  baseForce: 42,   stroke: 3,  maxLen: 30,  derating: 0.0070, fitting: "M5", purge: "N/A", ip: 40, tech: "generic" },
+                { model: "MHS3-32D",  baseForce: 74,   stroke: 4,  maxLen: 35,  derating: 0.0055, fitting: "M5", purge: "N/A", ip: 40, tech: "generic" },
+                { model: "MHS3-40D",  baseForce: 118,  stroke: 4,  maxLen: 40,  derating: 0.0042, fitting: "M5", purge: "N/A", ip: 40, tech: "generic" },
+                { model: "MHS3-50D",  baseForce: 187,  stroke: 6,  maxLen: 50, derating: 0.0030, fitting: "M5", purge: "N/A", ip: 40, tech: "generic" },
+                { model: "MHS3-63D",  baseForce: 332,  stroke: 8,  maxLen: 60, derating: 0.0022, fitting: "M5", purge: "N/A", ip: 40, tech: "generic" },
+                { model: "MHS3-80D",  baseForce: 496,  stroke: 10, maxLen: 70, derating: 0.0015, fitting: "Rc 1/8 (G 1/8)", purge: "N/A", ip: 40, tech: "generic" },
+                { model: "MHS3-100D", baseForce: 775,  stroke: 12, maxLen: 80, derating: 0.0010, fitting: "Rc 1/4 (G 1/4)", purge: "N/A", ip: 40, tech: "generic" },
+                { model: "MHS3-125D", baseForce: 1270, stroke: 16, maxLen: 90, derating: 0.0007, fitting: "Rc 3/8 (G 3/8)", purge: "N/A", ip: 40, tech: "generic" },
+                // Normally Closed IP40
+                // { model: "MHS3-16C",  baseForce: 19,   stroke: 2,  maxLen: 35,  derating: 0.0120, fitting: "M3", purge: "N/A", ip: 40, tech: "nc" },
+                // { model: "MHS3-20C",  baseForce: 33,   stroke: 2,  maxLen: 45,  derating: 0.0090, fitting: "M5", purge: "N/A", ip: 40, tech: "nc" },
+                // { model: "MHS3-25C",  baseForce: 55,   stroke: 3,  maxLen: 55,  derating: 0.0070, fitting: "M5", purge: "N/A", ip: 40, tech: "nc" },
+                // { model: "MHS3-32C",  baseForce: 96,   stroke: 4,  maxLen: 70,  derating: 0.0055, fitting: "M5", purge: "N/A", ip: 40, tech: "nc" },
+                // { model: "MHS3-40C",  baseForce: 150,  stroke: 4,  maxLen: 90,  derating: 0.0042, fitting: "M5", purge: "N/A", ip: 40, tech: "nc" },
+                // { model: "MHS3-50C",  baseForce: 240,  stroke: 6,  maxLen: 125, derating: 0.0030, fitting: "M5", purge: "N/A", ip: 40, tech: "nc" },
+                // { model: "MHS3-63C",  baseForce: 420,  stroke: 8,  maxLen: 160, derating: 0.0022, fitting: "M5", purge: "N/A", ip: 40, tech: "nc" },
+                // Standard IP64 (Boot variants)
+                // { model: "MHS3-16D+Boot", baseForce: 14,  stroke: 2,  maxLen: 35,  derating: 0.0120, fitting: "M3", purge: "N/A", ip: 64, tech: "generic" },
+                // { model: "MHS3-20D+Boot", baseForce: 25,  stroke: 2,  maxLen: 45,  derating: 0.0090, fitting: "M5", purge: "N/A", ip: 64, tech: "generic" },
+                // { model: "MHS3-25D+Boot", baseForce: 42,  stroke: 3,  maxLen: 55,  derating: 0.0070, fitting: "M5", purge: "N/A", ip: 64, tech: "generic" },
+                // { model: "MHS3-32D+Boot", baseForce: 74,  stroke: 4,  maxLen: 70,  derating: 0.0055, fitting: "M5", purge: "N/A", ip: 64, tech: "generic" },
+                // { model: "MHS3-40D+Boot", baseForce: 118, stroke: 4,  maxLen: 90,  derating: 0.0042, fitting: "M5", purge: "N/A", ip: 64, tech: "generic" },
+                // { model: "MHS3-50D+Boot", baseForce: 187, stroke: 6,  maxLen: 125, derating: 0.0030, fitting: "M5", purge: "N/A", ip: 64, tech: "generic" },
+                // { model: "MHS3-63D+Boot", baseForce: 332, stroke: 8,  maxLen: 160, derating: 0.0022, fitting: "M5", purge: "N/A", ip: 64, tech: "generic" }
+            ],
+            "Schunk (PZN-plus)": [
+                // Standard IP40 (-1 variants, sizes 40-240)
+                { model: "PZN-plus 40",    baseForce: 255,   stroke: 2.5, maxLen: 58,  derating: 0.0040, fitting: "M3",      purge: "M3", ip: 40, tech: "generic" },
+                { model: "PZN-plus 50-1",  baseForce: 325,   stroke: 4,   maxLen: 72,  derating: 0.0032, fitting: "M5",      purge: "M5", ip: 40, tech: "generic" },
+                { model: "PZN-plus 64-1",  baseForce: 580,   stroke: 6,   maxLen: 90,  derating: 0.0026, fitting: "M5",      purge: "M5", ip: 40, tech: "generic", altZimmer: "GD316N-C" },
+                { model: "PZN-plus 80-1",  baseForce: 1000,  stroke: 8,   maxLen: 110, derating: 0.0020, fitting: "M5",      purge: "M5", ip: 40, tech: "generic", altZimmer: "GD320N-C" },
+                { model: "PZN-plus 100-1", baseForce: 1800,  stroke: 10,  maxLen: 145, derating: 0.0015, fitting: "G 1/8\"", purge: "M5", ip: 40, tech: "generic" },
+                { model: "PZN-plus 125-1", baseForce: 3100,  stroke: 13,  maxLen: 180, derating: 0.0010, fitting: "G 1/8\"", purge: "M5", ip: 40, tech: "generic" },
+                { model: "PZN-plus 160-1", baseForce: 6000,  stroke: 16,  maxLen: 220, derating: 0.0009, fitting: "G 1/8\"", purge: "M5", ip: 40, tech: "generic" },
+                { model: "PZN-plus 200-1", baseForce: 7100,  stroke: 25,  maxLen: 280, derating: 0.0007, fitting: "G 1/4\"", purge: "M5", ip: 40, tech: "generic", altZimmer: "GD330N-C" },
+                { model: "PZN-plus 240-1", baseForce: 9500,  stroke: 30,  maxLen: 300, derating: 0.0005, fitting: "G 1/4\"", purge: "M5", ip: 40, tech: "generic" },
+                // Normally Closed IP40 (-AS)
+                { model: "PZN-plus 40-AS",    baseForce: 355,   stroke: 2.5, maxLen: 54,  derating: 0.0040, fitting: "M3",      purge: "M3", ip: 40, tech: "nc" },
+                { model: "PZN-plus 50-1-AS",  baseForce: 445,   stroke: 4,   maxLen: 68,  derating: 0.0032, fitting: "M5",      purge: "M5", ip: 40, tech: "nc" },
+                { model: "PZN-plus 64-1-AS",  baseForce: 765,   stroke: 6,   maxLen: 85,  derating: 0.0026, fitting: "M5",      purge: "M5", ip: 40, tech: "nc" },
+                { model: "PZN-plus 80-1-AS",  baseForce: 1350,  stroke: 8,   maxLen: 105, derating: 0.0020, fitting: "M5",      purge: "M5", ip: 40, tech: "nc" },
+                { model: "PZN-plus 100-1-AS", baseForce: 2520,  stroke: 10,  maxLen: 135, derating: 0.0015, fitting: "G 1/8\"", purge: "M5", ip: 40, tech: "nc" },
+                { model: "PZN-plus 125-1-AS", baseForce: 4150,  stroke: 13,  maxLen: 170, derating: 0.0010, fitting: "G 1/8\"", purge: "M5", ip: 40, tech: "nc" },
+                { model: "PZN-plus 160-1-AS", baseForce: 7990,  stroke: 16,  maxLen: 210, derating: 0.0009, fitting: "G 1/8\"", purge: "M5", ip: 40, tech: "nc" },
+                { model: "PZN-plus 200-1-AS", baseForce: 9800,  stroke: 25,  maxLen: 240, derating: 0.0007, fitting: "G 1/4\"", purge: "M5", ip: 40, tech: "nc" },
+                { model: "PZN-plus 240-1-AS", baseForce: 13720, stroke: 30,  maxLen: 250, derating: 0.0005, fitting: "G 1/4\"", purge: "M5", ip: 40, tech: "nc" },
+                // Normally Open IP40 (-IS)
+                { model: "PZN-plus 40-IS",    baseForce: 255,   stroke: 2.5, maxLen: 54,  derating: 0.0040, fitting: "M3",      purge: "M3", ip: 40, tech: "no" },
+                { model: "PZN-plus 50-1-IS",  baseForce: 325,   stroke: 4,   maxLen: 68,  derating: 0.0032, fitting: "M5",      purge: "M5", ip: 40, tech: "no" },
+                { model: "PZN-plus 64-1-IS",  baseForce: 580,   stroke: 6,   maxLen: 85,  derating: 0.0026, fitting: "M5",      purge: "M5", ip: 40, tech: "no" },
+                { model: "PZN-plus 80-1-IS",  baseForce: 1000,  stroke: 8,   maxLen: 105, derating: 0.0020, fitting: "M5",      purge: "M5", ip: 40, tech: "no" },
+                { model: "PZN-plus 100-1-IS", baseForce: 1800,  stroke: 10,  maxLen: 135, derating: 0.0015, fitting: "G 1/8\"", purge: "M5", ip: 40, tech: "no" },
+                { model: "PZN-plus 125-1-IS", baseForce: 3100,  stroke: 13,  maxLen: 170, derating: 0.0010, fitting: "G 1/8\"", purge: "M5", ip: 40, tech: "no" },
+                { model: "PZN-plus 160-1-IS", baseForce: 6000,  stroke: 16,  maxLen: 210, derating: 0.0009, fitting: "G 1/8\"", purge: "M5", ip: 40, tech: "no" },
+                { model: "PZN-plus 200-1-IS", baseForce: 7100,  stroke: 25,  maxLen: 240, derating: 0.0007, fitting: "G 1/4\"", purge: "M5", ip: 40, tech: "no" },
+                { model: "PZN-plus 240-1-IS", baseForce: 9500,  stroke: 30,  maxLen: 250, derating: 0.0005, fitting: "G 1/4\"", purge: "M5", ip: 40, tech: "no" },
+                // Standard IP64 (-SD)
+                { model: "PZN-plus 40-SD",    baseForce: 255,   stroke: 2.5, maxLen: 58,  derating: 0.0040, fitting: "M3",      purge: "M3", ip: 64, tech: "generic" },
+                { model: "PZN-plus 50-1-SD",  baseForce: 325,   stroke: 4,   maxLen: 72,  derating: 0.0032, fitting: "M5",      purge: "M5", ip: 64, tech: "generic" },
+                { model: "PZN-plus 64-1-SD",  baseForce: 580,   stroke: 6,   maxLen: 90,  derating: 0.0026, fitting: "M5",      purge: "M5", ip: 64, tech: "generic" },
+                { model: "PZN-plus 80-1-SD",  baseForce: 1000,  stroke: 8,   maxLen: 110, derating: 0.0020, fitting: "M5",      purge: "M5", ip: 64, tech: "generic" },
+                { model: "PZN-plus 100-1-SD", baseForce: 1800,  stroke: 10,  maxLen: 145, derating: 0.0015, fitting: "G 1/8\"", purge: "M5", ip: 64, tech: "generic" },
+                { model: "PZN-plus 125-1-SD", baseForce: 3100,  stroke: 13,  maxLen: 180, derating: 0.0010, fitting: "G 1/8\"", purge: "M5", ip: 64, tech: "generic" },
+                { model: "PZN-plus 160-1-SD", baseForce: 6000,  stroke: 16,  maxLen: 220, derating: 0.0009, fitting: "G 1/8\"", purge: "M5", ip: 64, tech: "generic" },
+                { model: "PZN-plus 200-1-SD", baseForce: 7100,  stroke: 25,  maxLen: 280, derating: 0.0007, fitting: "G 1/4\"", purge: "M5", ip: 64, tech: "generic" },
+                { model: "PZN-plus 240-1-SD", baseForce: 9500,  stroke: 30,  maxLen: 300, derating: 0.0005, fitting: "G 1/4\"", purge: "M5", ip: 64, tech: "generic" },
+                // Normally Closed IP64 (-AS-SD)
+                { model: "PZN-plus 40-AS-SD",    baseForce: 355,   stroke: 2.5, maxLen: 54,  derating: 0.0040, fitting: "M3",      purge: "M3", ip: 64, tech: "nc" },
+                { model: "PZN-plus 50-1-AS-SD",  baseForce: 445,   stroke: 4,   maxLen: 68,  derating: 0.0032, fitting: "M5",      purge: "M5", ip: 64, tech: "nc" },
+                { model: "PZN-plus 64-1-AS-SD",  baseForce: 765,   stroke: 6,   maxLen: 85,  derating: 0.0026, fitting: "M5",      purge: "M5", ip: 64, tech: "nc" },
+                { model: "PZN-plus 80-1-AS-SD",  baseForce: 1350,  stroke: 8,   maxLen: 105, derating: 0.0020, fitting: "M5",      purge: "M5", ip: 64, tech: "nc" },
+                { model: "PZN-plus 100-1-AS-SD", baseForce: 2520,  stroke: 10,  maxLen: 135, derating: 0.0015, fitting: "G 1/8\"", purge: "M5", ip: 64, tech: "nc" },
+                { model: "PZN-plus 125-1-AS-SD", baseForce: 4150,  stroke: 13,  maxLen: 170, derating: 0.0010, fitting: "G 1/8\"", purge: "M5", ip: 64, tech: "nc" },
+                { model: "PZN-plus 160-1-AS-SD", baseForce: 7990,  stroke: 16,  maxLen: 210, derating: 0.0009, fitting: "G 1/8\"", purge: "M5", ip: 64, tech: "nc" },
+                // Normally Open IP64 (-IS-SD)
+                { model: "PZN-plus 40-IS-SD",    baseForce: 255,   stroke: 2.5, maxLen: 54,  derating: 0.0040, fitting: "M3",      purge: "M3", ip: 64, tech: "no" },
+                { model: "PZN-plus 50-1-IS-SD",  baseForce: 325,   stroke: 4,   maxLen: 68,  derating: 0.0032, fitting: "M5",      purge: "M5", ip: 64, tech: "no" },
+                { model: "PZN-plus 64-1-IS-SD",  baseForce: 580,   stroke: 6,   maxLen: 85,  derating: 0.0026, fitting: "M5",      purge: "M5", ip: 64, tech: "no" },
+                { model: "PZN-plus 80-1-IS-SD",  baseForce: 1000,  stroke: 8,   maxLen: 105, derating: 0.0020, fitting: "M5",      purge: "M5", ip: 64, tech: "no" },
+                { model: "PZN-plus 100-1-IS-SD", baseForce: 1800,  stroke: 10,  maxLen: 135, derating: 0.0015, fitting: "G 1/8\"", purge: "M5", ip: 64, tech: "no" },
+                { model: "PZN-plus 125-1-IS-SD", baseForce: 3100,  stroke: 13,  maxLen: 170, derating: 0.0010, fitting: "G 1/8\"", purge: "M5", ip: 64, tech: "no" },
+                { model: "PZN-plus 160-1-IS-SD", baseForce: 6000,  stroke: 16,  maxLen: 210, derating: 0.0009, fitting: "G 1/8\"", purge: "M5", ip: 64, tech: "no" }
+            ],
+            "Zimmer Economical (GD300 Series)": [
+                // Standard IP40 - highest stroke (N variants)
+                { model: "GD303N-C",  baseForce: 200,   stroke: 3,  maxLen: 55,  derating: 0.0042, fitting: "M5",      purge: "M5",      ip: 40, tech: "generic" },
+                { model: "GD304N-C",  baseForce: 450,   stroke: 4,  maxLen: 65,  derating: 0.0035, fitting: "M5",      purge: "M5",      ip: 40, tech: "generic" },
+                { model: "GD306N-C",  baseForce: 750,   stroke: 6,  maxLen: 85,  derating: 0.0028, fitting: "M5",      purge: "M5",      ip: 40, tech: "generic" },
+                { model: "GD308N-C",  baseForce: 1200,  stroke: 8,  maxLen: 100, derating: 0.0022, fitting: "M5",      purge: "M5",      ip: 40, tech: "generic" },
+                { model: "GD310N-C",  baseForce: 2000,  stroke: 10, maxLen: 115, derating: 0.0018, fitting: "G 1/8\"", purge: "M5",      ip: 40, tech: "generic" },
+                { model: "GD312N-C",  baseForce: 3500,  stroke: 12, maxLen: 130, derating: 0.0014, fitting: "G 1/8\"", purge: "M5",      ip: 40, tech: "generic" },
+                { model: "GD316N-C",  baseForce: 6500,  stroke: 16, maxLen: 155, derating: 0.0011, fitting: "G 1/4\"", purge: "M5",      ip: 40, tech: "generic" },
+                { model: "GD320N-C",  baseForce: 8200,  stroke: 20, maxLen: 185, derating: 0.0008, fitting: "G 1/4\"", purge: "M5",      ip: 40, tech: "generic" },
+                { model: "GD330N-C",  baseForce: 15300, stroke: 30, maxLen: 240, derating: 0.0006, fitting: "G 1/4\"", purge: "G 1/8\"", ip: 40, tech: "generic" },
+                // Normally Closed IP40 (NC)
+                { model: "GD303NC-C", baseForce: 270,   stroke: 3,  maxLen: 55,  derating: 0.0042, fitting: "M5",      purge: "M5",      ip: 40, tech: "nc" },
+                { model: "GD304NC-C", baseForce: 650,   stroke: 4,  maxLen: 65,  derating: 0.0035, fitting: "M5",      purge: "M5",      ip: 40, tech: "nc" },
+                { model: "GD306NC-C", baseForce: 1000,  stroke: 6,  maxLen: 85,  derating: 0.0028, fitting: "M5",      purge: "M5",      ip: 40, tech: "nc" },
+                { model: "GD308NC-C", baseForce: 1800,  stroke: 8,  maxLen: 100, derating: 0.0022, fitting: "M5",      purge: "M5",      ip: 40, tech: "nc" },
+                { model: "GD310NC-C", baseForce: 2800,  stroke: 10, maxLen: 115, derating: 0.0018, fitting: "G 1/8\"", purge: "M5",      ip: 40, tech: "nc" },
+                { model: "GD312NC-C", baseForce: 4150,  stroke: 12, maxLen: 130, derating: 0.0014, fitting: "G 1/8\"", purge: "M5",      ip: 40, tech: "nc" },
+                { model: "GD316NC-C", baseForce: 8600,  stroke: 16, maxLen: 155, derating: 0.0011, fitting: "G 1/4\"", purge: "M5",      ip: 40, tech: "nc" },
+                { model: "GD320NC-C", baseForce: 14800, stroke: 20, maxLen: 185, derating: 0.0008, fitting: "G 1/4\"", purge: "M5",      ip: 40, tech: "nc" },
+                { model: "GD330NC-C", baseForce: 19800, stroke: 30, maxLen: 240, derating: 0.0006, fitting: "G 1/4\"", purge: "G 1/8\"", ip: 40, tech: "nc" },
+                // Normally Open IP40 (NO)
+                { model: "GD303NO-C", baseForce: 300,   stroke: 3,  maxLen: 55,  derating: 0.0042, fitting: "M5",      purge: "M5",      ip: 40, tech: "no" },
+                { model: "GD304NO-C", baseForce: 700,   stroke: 4,  maxLen: 65,  derating: 0.0035, fitting: "M5",      purge: "M5",      ip: 40, tech: "no" },
+                { model: "GD306NO-C", baseForce: 1050,  stroke: 6,  maxLen: 85,  derating: 0.0028, fitting: "M5",      purge: "M5",      ip: 40, tech: "no" },
+                { model: "GD308NO-C", baseForce: 1900,  stroke: 8,  maxLen: 100, derating: 0.0022, fitting: "M5",      purge: "M5",      ip: 40, tech: "no" },
+                { model: "GD310NO-C", baseForce: 2900,  stroke: 10, maxLen: 115, derating: 0.0018, fitting: "G 1/8\"", purge: "M5",      ip: 40, tech: "no" },
+                { model: "GD312NO-C", baseForce: 4250,  stroke: 12, maxLen: 130, derating: 0.0014, fitting: "G 1/8\"", purge: "M5",      ip: 40, tech: "no" },
+                { model: "GD316NO-C", baseForce: 8700,  stroke: 16, maxLen: 155, derating: 0.0011, fitting: "G 1/4\"", purge: "M5",      ip: 40, tech: "no" },
+                { model: "GD320NO-C", baseForce: 8200,  stroke: 20, maxLen: 185, derating: 0.0008, fitting: "G 1/4\"", purge: "M5",      ip: 40, tech: "no" },
+                { model: "GD330NO-C", baseForce: 15300, stroke: 30, maxLen: 240, derating: 0.0006, fitting: "G 1/4\"", purge: "G 1/8\"", ip: 40, tech: "no" }
+            ]
+        }
+    };
+
+    function switchTab(tabId, element) {
+        document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
+        document.querySelectorAll('.tab-button').forEach(btn => btn.classList.remove('active'));
+        document.getElementById(tabId).classList.add('active');
+        element.classList.add('active');
+        if (tabId === 'smc-guide-tab') checkBracketRequirement();
+    }
+
+    function setJaws(jaws) {
+        selectedJaws = jaws;
+        document.getElementById('jaw2').classList.toggle('active', jaws === 2);
+        document.getElementById('jaw3').classList.toggle('active', jaws === 3);
+        repopulateStrokeFilterOptions();
+    }
+
+    function repopulateStrokeFilterOptions() {
+        const filterDropdown = document.getElementById('strokeFilter');
+        const currentStroke = filterDropdown.value;
+        const activeGroup = gripperSpecs[selectedJaws];
+        const targetTech = document.getElementById('techType') ? document.getElementById('techType').value : 'generic';
+        const targetIp = document.getElementById('ipRating') ? document.getElementById('ipRating').value : 'any';
+
+        let strokesArray = [];
+        for (const brand in activeGroup) {
+            activeGroup[brand].forEach(item => {
+                if (item.tech !== targetTech) return;
+                if (targetIp !== "any" && item.ip.toString() !== targetIp) return;
+                if (item.stroke && !strokesArray.includes(item.stroke)) {
+                    strokesArray.push(item.stroke);
+                }
+            });
+        }
+
+        strokesArray.sort((a, b) => a - b);
+
+        filterDropdown.innerHTML = '<option value="any">any (Display All Matches)</option>';
+        strokesArray.forEach(val => {
+            filterDropdown.innerHTML += `<option value="${val}">${val} mm</option>`;
+        });
+
+        if (strokesArray.map(String).includes(String(currentStroke))) {
+            filterDropdown.value = currentStroke;
+        } else {
+            filterDropdown.value = "any";
+        }
+    }
+
+    function addLog(text) {
+        const logBox = document.getElementById('logBox');
+        logBox.innerHTML += `<div class="log-entry">> ${text}</div>`;
+        logBox.scrollTop = logBox.scrollHeight;
+    }
+
+    function evaluateGrippers() {
+        const weight = parseFloat(document.getElementById('weight').value);
+        const safetyFactor = parseFloat(document.getElementById('safetyFactor').value);
+        const pressure = parseFloat(document.getElementById('pressure').value);
+        const length = parseFloat(document.getElementById('length').value);
+        const targetTech = document.getElementById('techType').value;
+        const targetIp = document.getElementById('ipRating').value;
+        const selectedStroke = document.getElementById('strokeFilter').value;
+        
+        const logBox = document.getElementById('logBox');
+        logBox.style.display = 'block';
+        logBox.innerHTML = '';
+
+        addLog("PIPELINE INITIALIZED: COMMENCING STRUCTURAL GRIP CALCULATIONS...");
+        
+        const forceGripRequired = (weight * 9.81 * 15) * safetyFactor; 
+        addLog(`MASS PROFILE: ${weight} kg | ACCELERATION: 15xG | SAFETY MULTIPLIER BOUNDS: ${safetyFactor}x`);
+        addLog(`MINIMUM GRIPPING FORCE CAP PER WORKPIECE: ${forceGripRequired.toFixed(2)} N`);
+        if (selectedStroke !== "any") {
+            addLog(`CRITICAL MECHANICAL STRUCTURAL FILTER: STROKE PER JAW MATCHING [${selectedStroke} mm]`);
+        }
+
+        const activeDatabase = gripperSpecs[selectedJaws];
+        let finalizedSelections = {};
+
+        for (const [brand, models] of Object.entries(activeDatabase)) {
+            let optimizedMatch = null;
+            for (let i = 0; i < models.length; i++) {
+                const item = models[i];
+                if (item.tech !== targetTech) continue;
+                if (targetIp !== "any" && item.ip.toString() !== targetIp) continue;
+                
+                if (selectedStroke !== "any" && parseFloat(item.stroke) !== parseFloat(selectedStroke)) continue;
+                
+                let pressureScaledForce = item.baseForce * (pressure / 6.0);
+                let lengthDeratedForce = pressureScaledForce * (1.0 - (item.derating * length));
+                
+                if (length > item.maxLen) continue;
+
+                if (lengthDeratedForce >= forceGripRequired) {
+                    optimizedMatch = { ...item, calculatedForce: lengthDeratedForce.toFixed(1) };
+                    break;
+                }
+            }
+            finalizedSelections[brand] = optimizedMatch;
+        }
+        renderCards(finalizedSelections, forceGripRequired, pressure, length);
+    }
+
+    function renderCards(selections, requiredForce, testPressure, currentLength) {
+        const wrapper = document.getElementById('resultsWrapper');
+        wrapper.innerHTML = '<div class="results-grid"></div>';
+        const grid = wrapper.querySelector('.results-grid');
+
+        for (const [brand, data] of Object.entries(selections)) {
+            if (data) {
+                let techLabel = data.tech === "generic" ? "Double Acting Standard" : (data.tech === "nc" ? "Normally Closed" : "Normally Open");
+                const cardId = `canvas_${brand.replace(/[^a-zA-Z0-9]/g, '')}`;
+                
+                let crossMatchHtml = data.altZimmer ? `<span class="alt-badge">Zimmer Alternative: ${data.altZimmer}</span>` : '';
+                
+                grid.innerHTML += `
+                    <div class="brand-card">
+                        <div>
+                            <span class="brand-name">${brand}</span>
+                            <div class="model-name">${data.model}</div>
+                            <span class="tech-badge">${techLabel}</span>
+                            ${crossMatchHtml}
+                        </div>
+                        <div>
+                            <div class="metric-row"><span class="metric-label">Effective Output Force</span><span class="metric-value" style="color:var(--success);">${data.calculatedForce} N</span></div>
+                            <div class="metric-row"><span class="metric-label">Stroke Per Jaw</span><span class="metric-value" style="color:var(--accent);">${data.stroke} mm/jaw</span></div>
+                            <div class="metric-row"><span class="metric-label">Target Force Bounds</span><span class="metric-value">${requiredForce.toFixed(1)} N</span></div>
+                            <div class="metric-row"><span class="metric-label">Max Finger Limit</span><span class="metric-value">${data.maxLen} mm</span></div>
+                            <div class="metric-row"><span class="metric-label">Fitting Size</span><span class="metric-value" style="color:var(--accent); font-weight:700;">${data.fitting}</span></div>
+                            <div class="metric-row"><span class="metric-label">Purge Port Conn.</span><span class="metric-value" style="color:var(--warning); font-weight:700;">${data.purge}</span></div>
+                            <div class="metric-row"><span class="metric-label">IP Protection Class</span><span class="metric-value">IP ${data.ip}</span></div>
+                        </div>
+                        <div class="graph-container">
+                            <div class="graph-title">Force vs Finger Length Profile</div>
+                            <canvas id="${cardId}" width="260" height="130"></canvas>
+                        </div>
+                    </div>`;
+                
+                setTimeout(() => drawModelGraph(cardId, data, testPressure, currentLength, requiredForce), 10);
+            } else {
+                grid.innerHTML += `
+                    <div class="brand-card" style="border-color:#fca5a5; background:#fef2f2;">
+                        <div><span class="brand-name">${brand}</span><div class="model-name" style="color:#dc2626; font-size:1.1rem; margin-top:1rem;">No Fit Isolated</div></div>
+                        <p style="font-size:0.85rem; color:#991b1b; margin-top:1rem;">Workload parameters exceeded this manufacturer group capacity profile constraints.</p>
+                    </div>`;
+            }
+        }
+    }
+
+    function drawModelGraph(canvasId, item, pressure, currentLength, targetForce) {
+        const canvas = document.getElementById(canvasId);
+        if (!canvas) return;
+        const ctx = canvas.getContext('2d');
+        
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        
+        const paddingLeft = 35;
+        const paddingRight = 15;
+        const paddingTop = 10;
+        const paddingBottom = 20;
+        const graphWidth = canvas.width - paddingLeft - paddingRight;
+        const graphHeight = canvas.height - paddingTop - paddingBottom;
+        
+        const maxLenX = item.maxLen * 1.1;
+        let maxForceAtZero = item.baseForce * (pressure / 6.0);
+        let yMaxAxis = maxForceAtZero * 1.1;
+        if (targetForce > yMaxAxis) yMaxAxis = targetForce * 1.1;
+
+        ctx.strokeStyle = '#e2e8f0';
+        ctx.lineWidth = 1;
+        for (let i = 1; i <= 3; i++) {
+            let y = paddingTop + (graphHeight / 4) * i;
+            ctx.beginPath(); ctx.moveTo(paddingLeft, y); ctx.lineTo(canvas.width - paddingRight, y); ctx.stroke();
+            let x = paddingLeft + (graphWidth / 4) * i;
+            ctx.beginPath(); ctx.moveTo(x, paddingTop); ctx.lineTo(x, canvas.height - paddingBottom); ctx.stroke();
+        }
+
+        ctx.strokeStyle = '#64748b';
+        ctx.lineWidth = 1.5;
+        ctx.beginPath();
+        ctx.moveTo(paddingLeft, paddingTop);
+        ctx.lineTo(paddingLeft, canvas.height - paddingBottom);
+        ctx.lineTo(canvas.width - paddingRight, canvas.height - paddingBottom);
+        ctx.stroke();
+
+        ctx.fillStyle = '#64748b';
+        ctx.font = '9px monospace';
+        ctx.textAlign = 'right';
+        ctx.fillText(Math.round(yMaxAxis) + 'N', paddingLeft - 4, paddingTop + 8);
+        ctx.fillText(Math.round(yMaxAxis/2) + 'N', paddingLeft - 4, paddingTop + (graphHeight/2) + 3);
+        ctx.fillText('0N', paddingLeft - 4, canvas.height - paddingBottom);
+        
+        ctx.textAlign = 'center';
+        ctx.fillText(Math.round(item.maxLen) + 'mm', paddingLeft + (item.maxLen / maxLenX) * graphWidth, canvas.height - paddingBottom + 14);
+
+        ctx.strokeStyle = '#2563eb';
+        ctx.lineWidth = 2.5;
+        ctx.beginPath();
+        
+        for (let l = 0; l <= item.maxLen; l++) {
+            let pressureScaledForce = item.baseForce * (pressure / 6.0);
+            let force = pressureScaledForce * (1.0 - (item.derating * l));
+            if (force < 0) force = 0;
+            
+            let xPixel = paddingLeft + (l / maxLenX) * graphWidth;
+            let yPixel = canvas.height - paddingBottom - (force / yMaxAxis) * graphHeight;
+            
+            if (l === 0) ctx.moveTo(xPixel, yPixel);
+            else ctx.lineTo(xPixel, yPixel);
+        }
+        ctx.stroke();
+
+        let targetYPixel = canvas.height - paddingBottom - (targetForce / yMaxAxis) * graphHeight;
+        if (targetYPixel >= paddingTop && targetYPixel <= canvas.height - paddingBottom) {
+            ctx.strokeStyle = '#dc2626';
+            ctx.lineWidth = 1;
+            ctx.setLineDash([3, 3]);
+            ctx.beginPath();
+            ctx.moveTo(paddingLeft, targetYPixel);
+            ctx.lineTo(canvas.width - paddingRight, targetYPixel);
+            ctx.stroke();
+            ctx.setLineDash([]);
+        }
+
+        let currentXPixel = paddingLeft + (currentLength / maxLenX) * graphWidth;
+        let currentYPixel = canvas.height - paddingBottom - (parseFloat(item.baseForce * (pressure / 6.0) * (1.0 - (item.derating * currentLength))) / yMaxAxis) * graphHeight;
+        
+        if (currentXPixel <= paddingLeft + graphWidth && currentYPixel >= paddingTop) {
+            ctx.fillStyle = '#16a34a';
+            ctx.beginPath();
+            ctx.arc(currentXPixel, currentYPixel, 5, 0, 2 * Math.PI);
+            ctx.fill();
+        }
+    }
+
+    // --- TAB 2: TECHNICAL QUICK LOOKUP MATCH ---
+    function triggerLookupSync() { updateLookupBrands(); }
+    function updateLookupBrands() {
+        const jaw = document.getElementById('lookupJaw').value;
+        const brandSelect = document.getElementById('lookupBrand');
+        brandSelect.innerHTML = '';
+        Object.keys(gripperSpecs[jaw]).forEach(brand => {
+            brandSelect.innerHTML += `<option value="${brand}">${brand}</option>`;
+        });
+        updateLookupModels();
+    }
+    function updateLookupModels() {
+        const jaw = document.getElementById('lookupJaw').value;
+        const brand = document.getElementById('lookupBrand').value;
+        const modelSelect = document.getElementById('lookupModel');
+        modelSelect.innerHTML = '';
+        if(!brand || !gripperSpecs[jaw][brand]) return;
+        gripperSpecs[jaw][brand].forEach((item, index) => {
+            modelSelect.innerHTML += `<option value="${index}">${item.model}</option>`;
+        });
+        displayLookupData();
+    }
+    function displayLookupData() {
+        const jaw = document.getElementById('lookupJaw').value;
+        const brand = document.getElementById('lookupBrand').value;
+        const index = document.getElementById('lookupModel').value;
+        const display = document.getElementById('lookupDisplay');
+        if(!index || !gripperSpecs[jaw][brand] || !gripperSpecs[jaw][brand][index]) return;
+        const data = gripperSpecs[jaw][brand][index];
+        let altHtml = data.altZimmer ? `<div class="metric-row"><span class="metric-label">Zimmer Alternative Equivalent</span><span class="metric-value" style="color:#1e40af; font-weight:700;">${data.altZimmer}</span></div>` : '';
+        
+        display.innerHTML = `
+            <div style="margin-bottom:0.8rem; font-weight:700; font-size:1.15rem; color:var(--primary);">${data.model} Technical Profile</div>
+            ${altHtml}
+            <div class="metric-row"><span class="metric-label">Pneumatic Port Connection Size</span><span class="metric-value" style="color:var(--accent); font-size:1.1rem;">${data.fitting}</span></div>
+            <div class="metric-row"><span class="metric-label">Purge / Environmental Air Seal Port</span><span class="metric-value" style="color:var(--warning); font-size:1.1rem;">${data.purge}</span></div>
+            <div class="metric-row"><span class="metric-label">Nominal Stroke Per Jaw</span><span class="metric-value" style="color:var(--accent); font-weight:700;">${data.stroke} mm</span></div>
+            <div class="metric-row"><span class="metric-label">Base Force Rating</span><span class="metric-value">${data.baseForce} N</span></div>
+            <div class="metric-row"><span class="metric-label">Ingress Rating</span><span class="metric-value">IP ${data.ip}</span></div>`;
+    }
+
+    // --- TAB 3: REGISTRY SPECIFICATION DYNAMIC EDITOR ---
+    function triggerEditorSync() { updateEditorBrands(); }
+    function updateEditorBrands() {
+        const jaw = document.getElementById('editJaw').value;
+        const brandSelector = document.getElementById('editBrand');
+        brandSelector.innerHTML = '';
+        Object.keys(gripperSpecs[jaw]).forEach(brand => {
+            brandSelector.innerHTML += `<option value="${brand}">${brand}</option>`;
+        });
+        updateEditorModels();
+    }
+    function updateEditorModels() {
+        const jaw = document.getElementById('editJaw').value;
+        const brand = document.getElementById('editBrand').value;
+        const selector = document.getElementById('editModelSelector');
+        selector.innerHTML = '<option value="NEW">-- Create & Append New Variant String --</option>';
+        if(gripperSpecs[jaw] && gripperSpecs[jaw][brand]) {
+            gripperSpecs[jaw][brand].forEach((item, index) => {
+                selector.innerHTML += `<option value="${index}">Edit: ${item.model}</option>`;
+            });
+        }
+        populateEditorFormFields();
+    }
+    function populateEditorFormFields() {
+        const jaw = document.getElementById('editJaw').value;
+        const brand = document.getElementById('editBrand').value;
+        const selectionIndex = document.getElementById('editModelSelector').value;
+        if (selectionIndex === "NEW") {
+            document.getElementById('fieldModelName').value = '';
+            document.getElementById('fieldFitting').value = '';
+            document.getElementById('fieldPurge').value = 'N/A';
+            document.getElementById('fieldStroke').value = '5';
+            document.getElementById('fieldBaseForce').value = '250';
+            document.getElementById('fieldMaxLen').value = '100';
+            document.getElementById('fieldDerating').value = '0.002';
+        } else {
+            const data = gripperSpecs[jaw][brand][selectionIndex];
+            document.getElementById('fieldModelName').value = data.model;
+            document.getElementById('fieldFitting').value = data.fitting;
+            document.getElementById('fieldPurge').value = data.purge;
+            document.getElementById('fieldStroke').value = data.stroke;
+            document.getElementById('fieldBaseForce').value = data.baseForce;
+            document.getElementById('fieldMaxLen').value = data.maxLen;
+            document.getElementById('fieldDerating').value = data.derating;
+        }
+    }
+    function commitRegistryModification() {
+        const jaw = document.getElementById('editJaw').value;
+        const brand = document.getElementById('editBrand').value;
+        const selectionIndex = document.getElementById('editModelSelector').value;
+        const modelName = document.getElementById('fieldModelName').value.trim();
+        const fitting = document.getElementById('fieldFitting').value.trim();
+        const purge = document.getElementById('fieldPurge').value.trim();
+        const strokeVal = parseFloat(document.getElementById('fieldStroke').value);
+        const baseForce = parseFloat(document.getElementById('fieldBaseForce').value);
+        const maxLen = parseFloat(document.getElementById('fieldMaxLen').value);
+        const derating = parseFloat(document.getElementById('fieldDerating').value);
+        if(!modelName || !fitting) { alert("Execution Interrupted: Entry values cannot be blank."); return; }
+        const updatePayload = { model: modelName, baseForce, stroke: strokeVal, maxLen, derating, fitting, purge, ip: 40, tech: "generic" };
+        if (selectionIndex === "NEW") gripperSpecs[jaw][brand].push(updatePayload);
+        else gripperSpecs[jaw][brand][selectionIndex] = updatePayload;
+        alert("Success: Local runtime profile matrices refreshed.");
+        repopulateStrokeFilterOptions();
+        updateEditorModels();
+    }
+
+    function checkBracketRequirement() {
+        const selection = document.getElementById('guideModelSelect').value;
+        const resultBox = document.getElementById('bracketResultBox');
+        if (selection === "direct") {
+            resultBox.style.backgroundColor = "rgba(22, 163, 74, 0.15)";
+            resultBox.style.color = "var(--success)";
+            resultBox.innerHTML = `
+                <div style="font-size: 1.15rem; margin-bottom: 0.25rem;">✓ Direct Groove Integration (No Bracket Required)</div>
+                <div style="font-size: 0.85rem; font-weight: normal; color: #475569;">
+                    The read switch slides straight into the tracking rail profile. Tighten housing screw with a flathead watchmaker screwdriver.
+                </div>`;
+        } else {
+            resultBox.style.backgroundColor = "rgba(234, 88, 12, 0.15)";
+            resultBox.style.color = "var(--warning)";
+            resultBox.innerHTML = `
+                <div style="font-size: 1.15rem; margin-bottom: 0.25rem;">⚠️ Dedicated Mounting Bracket Required</div>
+                <div style="font-size: 0.85rem; font-weight: normal; color: #475569; margin-bottom: 0.5rem;">
+                    Requires Bracket Component Reference No: <strong style="color:var(--primary)">BMG2-012</strong>.
+                </div>
+                <div style="font-size: 0.8rem; font-weight: normal; text-align: left; background: #ffffff; padding: 0.6rem; border-radius: 4px; border: 1px dashed var(--border);">
+                    1. Place switch roughly into base groove.<br>
+                    2. Slide clean into the bracket installation layout path.<br>
+                    3. Establish sensor location, then tighten set screws (M2.5).
+                </div>`;
+        }
+    }
+
+    function exportToPDF() { window.print(); }
+    window.onload = function() { 
+        repopulateStrokeFilterOptions();
+        updateLookupBrands(); 
+    };
+</script>
+</body>
+</html>
